@@ -32,6 +32,7 @@ public class BetterLogger {
 	public let name: String
 	public var handlers: [LoggerHandler]
 	public var listeners: [BetterLogger.Severity: () -> Void]
+	public var minimumSeverity: Severity = .debug
 	
 	init(
 		name: String,
@@ -49,6 +50,9 @@ public class BetterLogger {
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
+		guard .debug >= minimumSeverity else {
+			return
+		}
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
@@ -65,6 +69,9 @@ public class BetterLogger {
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
+		guard .verbose >= minimumSeverity else {
+			return
+		}
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
@@ -81,6 +88,9 @@ public class BetterLogger {
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
+		guard .info >= minimumSeverity else {
+			return
+		}
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
@@ -97,6 +107,9 @@ public class BetterLogger {
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
+		guard .warning >= minimumSeverity else {
+			return
+		}
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
@@ -113,6 +126,9 @@ public class BetterLogger {
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
+		guard .error >= minimumSeverity else {
+			return
+		}
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
@@ -129,6 +145,9 @@ public class BetterLogger {
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
+		guard .fatalError >= minimumSeverity else {
+			return
+		}
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
@@ -176,6 +195,11 @@ extension BetterLogger {
 		public let severity: BetterLogger.Severity
 		public let context: [String: Any]
 		public let metadata: BetterLogger.Metadata
+	}
+}
+extension BetterLogger.Severity: Comparable {
+	public static func <(lhs: Self, rhs: Self) -> Bool {
+		return lhs.rawValue < rhs.rawValue
 	}
 }
 

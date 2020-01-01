@@ -18,6 +18,21 @@ final class BetterLoggerTests: XCTestCase {
 		log.fatalError("Death note")
     }
 	
+    func testMinimumSeverity() {
+		let customLogger = BetterLogger(
+			name: "Custom logger 0",
+			handlers: [ConsoleLoggerHandler(formatter: ColoredConsoleLoggerOutputFormatter())],
+			listeners: [:]
+		)
+		customLogger.minimumSeverity = .warning
+		customLogger.debug("THIS SHOULDN'T PRINT")
+		customLogger.verbose("THIS SHOULDN'T PRINT")
+		customLogger.info("THIS SHOULDN'T PRINT")
+		customLogger.warning("THIS SHOULD PRINT", context: ["person": Person(name: "Daniel")])
+		customLogger.error("THIS SHOULD PRINT")
+		customLogger.fatalError("THIS SHOULD PRINT")
+    }
+	
 	func testCustomLoggerSeverities() {
 		let customLogger = BetterLogger(
 			name: "Custom logger 1",
@@ -62,6 +77,7 @@ final class BetterLoggerTests: XCTestCase {
 
     static var allTests = [
         ("testSeverities", testSeverities),
+		("testMinimumSeverity", testMinimumSeverity),
 		("testCustomLoggerSeverities", testCustomLoggerSeverities),
 		("testCustomLoggerListeners", testCustomLoggerListeners),
     ]
