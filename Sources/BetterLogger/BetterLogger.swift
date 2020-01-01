@@ -35,7 +35,7 @@ public class BetterLogger {
 	
 	public init(
 		name: String,
-		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: DefaultLoggerOutputFormatter())],
+		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
 		listeners: [BetterLogger.Severity: () -> Void] = [:]
 	) {
 		self.name = name
