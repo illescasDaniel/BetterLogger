@@ -20,9 +20,21 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "BetterLogger",
-            dependencies: []),
+            dependencies: [],
+			exclude: [
+				"generate.sh",
+				"gyb.py",
+				"BetterLogger.swift.gyb"
+			]
+		),
         .testTarget(
             name: "BetterLoggerTests",
-            dependencies: ["BetterLogger"]),
+            dependencies: ["BetterLogger"],
+			exclude: [
+				"generate.sh",
+				"gyb.py",
+				"BetterLogger.swift.gyb"
+			]
+		),
     ]
 )
