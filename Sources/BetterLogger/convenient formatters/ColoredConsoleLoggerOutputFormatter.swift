@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct DefaultLoggerOutputFormatter: LoggerOutputFormatter {
+public struct ColoredConsoleLoggerOutputFormatter: LoggerOutputFormatter {
 	
 	public init() {}
 	
