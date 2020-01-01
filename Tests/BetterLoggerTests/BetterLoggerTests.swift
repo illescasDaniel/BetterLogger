@@ -10,6 +10,8 @@ final class BetterLoggerTests: XCTestCase {
 	var log: BetterLogger { BetterLogger.default }
 	
     func testSeverities() {
+		log.debug("Debug stuff")
+		log.verbose("Verbose stuff")
 		log.info("Some info here")
 		log.warning("This is a warning", context: ["person": Person(name: "Daniel")])
 		log.error("Death note")
@@ -22,6 +24,8 @@ final class BetterLoggerTests: XCTestCase {
 			handlers: [ConsoleLoggerHandler(formatter: ColoredConsoleLoggerOutputFormatter())],
 			listeners: [:]
 		)
+		customLogger.debug("Debug stuff")
+		customLogger.verbose("Verbose stuff")
 		customLogger.info("Some info here")
 		customLogger.warning("This is a warning", context: ["person": Person(name: "Daniel")])
 		customLogger.error("Death note")

@@ -25,7 +25,7 @@ SOFTWARE.
 
 import Foundation
 
-% severity_modes = ['verbose', 'info', 'warning', 'error', 'fatalError']
+% severity_modes = ['debug', 'verbose', 'info', 'warning', 'error', 'fatalError']
 public class BetterLogger {
 
 	public static let `default` = BetterLogger(name: "Default")
@@ -36,7 +36,7 @@ public class BetterLogger {
 	
 	init(
 		name: String,
-		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: DefaultLoggerOutputFormatter())],
+		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
 		listeners: [BetterLogger.Severity: () -> Void] = [:]
 	) {
 		self.name = name
@@ -72,7 +72,7 @@ extension BetterLogger {
 		public let column: Int
 	}
 	
-	public enum Severity {
+	public enum Severity: Int {
 			
 		% for severity in severity_modes:
 		case ${severity}
@@ -80,6 +80,7 @@ extension BetterLogger {
 
 		public var icon: String {
 			switch self {
+			case .debug: return "🐞"
 			case .verbose: return "📄"
 			case .info: return "ℹ️"
 			case .warning: return "⚠️"

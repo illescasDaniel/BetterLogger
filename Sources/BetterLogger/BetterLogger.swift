@@ -33,7 +33,7 @@ public class BetterLogger {
 	public var handlers: [LoggerHandler]
 	public var listeners: [BetterLogger.Severity: () -> Void]
 	
-	public init(
+	init(
 		name: String,
 		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
 		listeners: [BetterLogger.Severity: () -> Void] = [:]
@@ -43,6 +43,22 @@ public class BetterLogger {
 		self.listeners = listeners
 	}
 
+	public func debug(
+		_ messageOrValue: Any,
+		context: [String: Any] = [:],
+
+		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
+	) {
+		for handler in self.handlers {
+			handler.log(.init(
+				loggerName: self.name,
+				value: messageOrValue, severity: .debug, context: context,
+				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
+			))
+			self.listeners[.debug]?()
+		}
+	}
+	
 	public func verbose(
 		_ messageOrValue: Any,
 		context: [String: Any] = [:],
@@ -133,8 +149,9 @@ extension BetterLogger {
 		public let column: Int
 	}
 	
-	public enum Severity {
+	public enum Severity: Int {
 			
+		case debug
 		case verbose
 		case info
 		case warning
@@ -143,6 +160,7 @@ extension BetterLogger {
 
 		public var icon: String {
 			switch self {
+			case .debug: return "🐞"
 			case .verbose: return "📄"
 			case .info: return "ℹ️"
 			case .warning: return "⚠️"

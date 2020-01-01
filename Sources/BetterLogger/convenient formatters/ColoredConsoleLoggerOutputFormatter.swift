@@ -18,6 +18,7 @@ public struct ColoredConsoleLoggerOutputFormatter: LoggerOutputFormatter {
 			return escape + color + string + reset
 		}
 		switch severity {
+		case .debug: return colorStr("35m")
 		case .verbose: return colorStr("0m")
 		case .info: return colorStr("36m")
 		case .warning: return colorStr("33m")
