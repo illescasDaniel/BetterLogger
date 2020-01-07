@@ -47,25 +47,39 @@ public class BetterLogger {
 
 	% for severity in severity_modes:
 	public func ${severity}(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .${severity} >= minimumSeverity else {
-			return
-		}
-		for handler in self.handlers {
-			handler.log(.init(
-				loggerName: self.name,
-				value: messageOrValue, severity: .${severity}, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
-			))
-			self.listeners[.${severity}]?()
-		}
+		log(
+			messageOrValue(), context: context(), severity: .${severity},
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
 	}
 	
 	% end
+	//
+	
+	private func log(
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
+		severity: Severity,
+
+		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
+	) {
+		guard severity >= minimumSeverity else {
+			return
+		}
+		self.listeners[severity]?()
+		for handler in self.handlers {
+			handler.log(.init(
+				loggerName: self.name,
+				value: messageOrValue(), severity: severity, context: context(),
+				metadata: .init(file: _file, function: _function, line: _line, column: _column)
+			))
+		}
+	}
 }
 extension BetterLogger {
 	

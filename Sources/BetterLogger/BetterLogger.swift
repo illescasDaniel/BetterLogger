@@ -45,119 +45,98 @@ public class BetterLogger {
 	}
 
 	public func debug(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .debug >= minimumSeverity else {
-			return
-		}
-		for handler in self.handlers {
-			handler.log(.init(
-				loggerName: self.name,
-				value: messageOrValue, severity: .debug, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
-			))
-			self.listeners[.debug]?()
-		}
+		log(
+			messageOrValue(), context: context(), severity: .debug,
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
 	}
 	
 	public func verbose(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .verbose >= minimumSeverity else {
-			return
-		}
-		for handler in self.handlers {
-			handler.log(.init(
-				loggerName: self.name,
-				value: messageOrValue, severity: .verbose, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
-			))
-			self.listeners[.verbose]?()
-		}
+		log(
+			messageOrValue(), context: context(), severity: .verbose,
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
 	}
 	
 	public func info(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .info >= minimumSeverity else {
-			return
-		}
-		for handler in self.handlers {
-			handler.log(.init(
-				loggerName: self.name,
-				value: messageOrValue, severity: .info, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
-			))
-			self.listeners[.info]?()
-		}
+		log(
+			messageOrValue(), context: context(), severity: .info,
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
 	}
 	
 	public func warning(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .warning >= minimumSeverity else {
-			return
-		}
-		for handler in self.handlers {
-			handler.log(.init(
-				loggerName: self.name,
-				value: messageOrValue, severity: .warning, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
-			))
-			self.listeners[.warning]?()
-		}
+		log(
+			messageOrValue(), context: context(), severity: .warning,
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
 	}
 	
 	public func error(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .error >= minimumSeverity else {
-			return
-		}
-		for handler in self.handlers {
-			handler.log(.init(
-				loggerName: self.name,
-				value: messageOrValue, severity: .error, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
-			))
-			self.listeners[.error]?()
-		}
+		log(
+			messageOrValue(), context: context(), severity: .error,
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
 	}
 	
 	public func fatalError(
-		_ messageOrValue: Any,
-		context: [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard .fatalError >= minimumSeverity else {
+		log(
+			messageOrValue(), context: context(), severity: .fatalError,
+			_file: _file, _function: _function, _line: _line, _column: _column
+		)
+	}
+	
+	//
+	
+	private func log(
+		_ messageOrValue: @autoclosure () -> Any,
+		context: @autoclosure () -> [String: Any] = [:],
+		severity: Severity,
+
+		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
+	) {
+		guard severity >= minimumSeverity else {
 			return
 		}
+		self.listeners[severity]?()
 		for handler in self.handlers {
 			handler.log(.init(
 				loggerName: self.name,
-				value: messageOrValue, severity: .fatalError, context: context,
-				metadata: .init(file: _file, function: _function, line: _line, column: _column)	
+				value: messageOrValue(), severity: severity, context: context(),
+				metadata: .init(file: _file, function: _function, line: _line, column: _column)
 			))
-			self.listeners[.fatalError]?()
 		}
 	}
-	
 }
 extension BetterLogger {
 	
