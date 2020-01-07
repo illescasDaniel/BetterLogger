@@ -15,6 +15,7 @@ public struct XcodeLoggerOutputFormatter: LoggerOutputFormatter {
 		
 		let date = Date()
 		let dateFormatter = DateFormatter()
+		dateFormatter.locale = Locale(identifier: "en")
 		dateFormatter.dateStyle = .medium
 		dateFormatter.timeStyle = .short
 
