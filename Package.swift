@@ -24,7 +24,9 @@ let package = Package(
 			exclude: [
 				"generate.sh",
 				"gyb.py",
-				"BetterLogger.swift.gyb"
+				"BetterLogger.swift.gyb",
+				"screenshots/consoleOutput1.png",
+				"screenshots/consoleOutput2.png"
 			]
 		),
         .testTarget(
@@ -33,7 +35,9 @@ let package = Package(
 			exclude: [
 				"generate.sh",
 				"gyb.py",
-				"BetterLogger.swift.gyb"
+				"BetterLogger.swift.gyb",
+				"screenshots/consoleOutput1.png",
+				"screenshots/consoleOutput2.png"
 			]
 		),
     ]
