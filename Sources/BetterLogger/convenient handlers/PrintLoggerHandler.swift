@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ConsoleLoggerHandler: LoggerHandler {
+public struct PrintLoggerHandler: LoggerHandler {
 	
 	public let formatter: LoggerOutputFormatter
 	

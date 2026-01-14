@@ -36,7 +36,7 @@ public class BetterLogger {
 
 	public init(
 		name: String,
-		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
+		handlers: [LoggerHandler] = [PrintLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
 		listeners: [BetterLogger.Severity: () -> Void] = [:]
 	) {
 		self.name = name
@@ -121,6 +121,7 @@ public class BetterLogger {
 	private func log(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
+		contextPrivacy: ContextPrivacy = .public,
 		severity: Severity,
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
@@ -130,9 +131,12 @@ public class BetterLogger {
 		}
 		self.listeners[severity]?()
 		for handler in self.handlers {
-			handler.log(.init(
+			handler.log(Parameters(
 				loggerName: self.name,
-				value: messageOrValue(), severity: severity, context: context(),
+				value: messageOrValue(),
+				severity: severity,
+				context: context(),
+				contextPrivacy: contextPrivacy,
 				metadata: .init(file: _file, function: _function, line: _line, column: _column)
 			))
 		}
@@ -167,11 +171,17 @@ extension BetterLogger {
 		}
 	}
 
+	public enum ContextPrivacy {
+		case `public`
+		case `private`
+	}
+
 	public struct Parameters {
 		public let loggerName: String
 		public let value: Any
 		public let severity: BetterLogger.Severity
 		public let context: [String: Any]
+		public let contextPrivacy: ContextPrivacy
 		public let metadata: BetterLogger.Metadata
 	}
 }

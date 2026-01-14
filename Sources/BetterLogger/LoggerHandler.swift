@@ -8,6 +8,5 @@
 import Foundation
 
 public protocol LoggerHandler {
-	var formatter: LoggerOutputFormatter { get }
 	func log(_ parameters: BetterLogger.Parameters)
 }

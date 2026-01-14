@@ -1,0 +1,48 @@
+//
+//  OSLogHandler.swift
+//
+//
+//  Created by Daniel Illescas Romero on 01/01/2020.
+//
+
+import Foundation
+import os
+
+% severity_modes = [('debug','debug'), ('verbose','notice'), ('info','info'), ('warning','warning'), ('error','error'), ('fatalError','fault')]
+
+@available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+public struct OSLoggerHandler: LoggerHandler {
+
+	public init() {}
+
+	public func log(_ parameters: BetterLogger.Parameters) {
+		let subsystem = Bundle.main.bundleIdentifier ?? "App"
+		let logger = Logger(subsystem: subsystem, category: parameters.loggerName)
+
+		let date = Date()
+		let dateFormatter = DateFormatter()
+		dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+
+		let message = """
+		[\(dateFormatter.string(from: date)) | \(parameters.severity) | \(parameters.metadata.file.lastPathComponent):\(parameters.metadata.line):\(parameters.metadata.column) \(parameters.metadata.function.trimmingCharacters(in: .whitespacesAndNewlines))]
+		\(_stringRepresentationFrom(parameters.value))
+		"""
+		let context = _stringRepresentationFromDictionary(parameters.context)
+
+		switch parameters.severity {
+		% for severity, osLogSeverity in severity_modes:
+		case .${severity}:
+			if parameters.context.isEmpty {
+				logger.${osLogSeverity}("\(message)")
+			} else {
+				switch parameters.contextPrivacy {
+				case .private:
+					logger.${osLogSeverity}("\(message)\n\(context, privacy: .private)")
+				case .public:
+					logger.${osLogSeverity}("\(message)\n\(context, privacy: .public )")
+				}
+			}
+		% end
+		}
+	}
+}

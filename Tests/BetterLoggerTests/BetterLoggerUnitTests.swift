@@ -1,5 +1,5 @@
 import XCTest
-@testable import BetterLogger
+import BetterLogger
 
 final class BetterLoggerUnitTests: XCTestCase {
 

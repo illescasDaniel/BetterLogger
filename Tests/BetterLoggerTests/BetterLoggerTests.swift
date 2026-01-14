@@ -21,7 +21,7 @@ final class BetterLoggerTests: XCTestCase {
 	func testMinimumSeverity() {
 		let customLogger = BetterLogger(
 			name: "Custom logger 0",
-			handlers: [ConsoleLoggerHandler(formatter: ColoredConsoleLoggerOutputFormatter())],
+			handlers: [PrintLoggerHandler(formatter: ColoredConsoleLoggerOutputFormatter())],
 			listeners: [:]
 		)
 		customLogger.minimumSeverity = .warning
@@ -36,7 +36,7 @@ final class BetterLoggerTests: XCTestCase {
 	func testCustomLoggerSeverities() {
 		let customLogger = BetterLogger(
 			name: "Custom logger 1",
-			handlers: [ConsoleLoggerHandler(formatter: ColoredConsoleLoggerOutputFormatter())],
+			handlers: [PrintLoggerHandler(formatter: ColoredConsoleLoggerOutputFormatter())],
 			listeners: [:]
 		)
 		customLogger.debug("Debug stuff")
@@ -50,7 +50,21 @@ final class BetterLoggerTests: XCTestCase {
 	func testXcodeInlineLoggerSeverities() {
 		let customLogger = BetterLogger(
 			name: "Custom logger 1",
-			handlers: [ConsoleLoggerHandler(formatter: XcodeInlineLoggerOutputFormatter())],
+			handlers: [PrintLoggerHandler(formatter: XcodeInlineLoggerOutputFormatter())],
+			listeners: [:]
+		)
+		customLogger.debug("Debug stuff")
+		customLogger.verbose("Verbose stuff")
+		customLogger.info("Some info here", context: ["some key": [1,2,3]])
+		customLogger.warning("This is a warning", context: ["person": Person(name: "Daniel")])
+		customLogger.error("Death note")
+		customLogger.fatalError("Death note")
+	}
+
+	func testOSLoggerSeverities() {
+		let customLogger = BetterLogger(
+			name: "Custom logger 1",
+			handlers: [OSLoggerHandler()],
 			listeners: [:]
 		)
 		customLogger.debug("Debug stuff")
@@ -68,7 +82,7 @@ final class BetterLoggerTests: XCTestCase {
 
 		let customLogger = BetterLogger(
 			name: "Custom logger 2",
-			handlers: [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
+			handlers: [PrintLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
 			listeners: [
 				.info: {
 					print("info")
