@@ -22,7 +22,6 @@ let package = Package(
 			name: "BetterLogger",
 			dependencies: [],
 			exclude: [
-				"generate.sh",
 				"BetterLogger.swift.gyb"
 			]
 		),

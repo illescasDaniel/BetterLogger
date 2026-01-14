@@ -57,7 +57,7 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	% end
 	//
 
@@ -82,16 +82,15 @@ public class BetterLogger {
 	}
 }
 extension BetterLogger {
-	
+
 	public struct Metadata {
 		public let file: String
 		public let function: String
 		public let line: Int
 		public let column: Int
 	}
-	
+
 	public enum Severity: Int {
-			
 		% for severity in severity_modes:
 		case ${severity}
 		% end
@@ -107,7 +106,7 @@ extension BetterLogger {
 			}
 		}
 	}
-	
+
 	public struct Parameters {
 		public let loggerName: String
 		public let value: Any
