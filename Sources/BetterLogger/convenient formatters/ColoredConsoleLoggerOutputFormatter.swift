@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ColoredConsoleLoggerOutputFormatter.swift
 //  
 //
 //  Created by Daniel Illescas Romero on 01/01/2020.
@@ -35,19 +35,19 @@ public struct ColoredConsoleLoggerOutputFormatter: LoggerOutputFormatter {
 		dateFormatter.dateStyle = .medium
 		dateFormatter.timeStyle = .short
 
-		let aContext = parameters.context.isEmpty ? "" : "\n\n- Context: \n\(_stringRepresentationFrom(parameters.context))"
+		let aContext = parameters.context.isEmpty ? "" : "\n\n- Context: \n\(_stringRepresentationFromDictionary(parameters.context))"
 
 		let objectDescription = _stringRepresentationFrom(parameters.value)
 
 		let p1 = """
-		======================================================
-		  (\(parameters.loggerName) logger)
-		  === \(parameters.severity.icon) [\(parameters.severity)] \(parameters.severity.icon) - [\(dateFormatter.string(from: date))]  ===
-		  ===  \(parameters.metadata.file.lastPathComponent):\(parameters.metadata.line):\(parameters.metadata.column) \(parameters.metadata.function)  ===
+		>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		(\(parameters.loggerName) logger)
+		> \(parameters.severity.icon) [\(parameters.severity)] \(parameters.severity.icon) - [\(dateFormatter.string(from: date))]
+		>  \(parameters.metadata.file.lastPathComponent):\(parameters.metadata.line):\(parameters.metadata.column) \(parameters.metadata.function)
 		
 		"""
 		let p2 = "\n\(objectDescription)\(aContext)\n"
-		let p3 = "======================================================"
+		let p3 = "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 		return colored(string: p1, severity: parameters.severity) + p2 + colored(string: p3, severity: parameters.severity)
 	}
 }

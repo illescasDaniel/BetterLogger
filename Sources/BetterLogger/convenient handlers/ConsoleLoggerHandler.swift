@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ConsoleLoggerHandler.swift
 //  
 //
 //  Created by Daniel Illescas Romero on 01/01/2020.

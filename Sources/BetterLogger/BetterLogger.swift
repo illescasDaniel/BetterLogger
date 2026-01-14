@@ -1,27 +1,27 @@
 /*
-The MIT License (MIT)
+ The MIT License (MIT)
 
-Copyright (c) 2019 Daniel Illescas Romero
-https://github.com/illescasDaniel/BetterLogger
+ Copyright (c) 2019 Daniel Illescas Romero
+ https://github.com/illescasDaniel/BetterLogger
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+ */
 
 import Foundation
 
@@ -33,7 +33,7 @@ public class BetterLogger {
 	public var handlers: [LoggerHandler]
 	public var listeners: [BetterLogger.Severity: () -> Void]
 	public var minimumSeverity: Severity = .debug
-	
+
 	public init(
 		name: String,
 		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
@@ -55,7 +55,7 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	public func verbose(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -67,7 +67,7 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	public func info(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -79,7 +79,7 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	public func warning(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -91,7 +91,7 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	public func error(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -103,7 +103,7 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	public func fatalError(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -115,9 +115,9 @@ public class BetterLogger {
 			_file: _file, _function: _function, _line: _line, _column: _column
 		)
 	}
-	
+
 	//
-	
+
 	private func log(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -139,16 +139,16 @@ public class BetterLogger {
 	}
 }
 extension BetterLogger {
-	
+
 	public struct Metadata {
 		public let file: String
 		public let function: String
 		public let line: Int
 		public let column: Int
 	}
-	
+
 	public enum Severity: Int {
-			
+
 		case debug
 		case verbose
 		case info
@@ -167,7 +167,7 @@ extension BetterLogger {
 			}
 		}
 	}
-	
+
 	public struct Parameters {
 		public let loggerName: String
 		public let value: Any
@@ -180,23 +180,4 @@ extension BetterLogger.Severity: Comparable {
 	public static func <(lhs: Self, rhs: Self) -> Bool {
 		return lhs.rawValue < rhs.rawValue
 	}
-}
-
-// Internal convenience functions
-
-internal extension String {
-	var lastPathComponent: String {
-		return URL(fileURLWithPath: self).lastPathComponent
-	}
-}
-
-internal func _stringRepresentationFrom(_ value: Any) -> String {
-	let objectMirror = Mirror(reflecting: value)
-	var objectDescription = ""
-	if value is CustomStringConvertible || value is CustomDebugStringConvertible || objectMirror.displayStyle == .enum || objectMirror.displayStyle == .struct {
-		objectDescription = String(describing: value)
-	} else {
-		dump(value, to: &objectDescription)
-	}
-	return objectDescription
 }

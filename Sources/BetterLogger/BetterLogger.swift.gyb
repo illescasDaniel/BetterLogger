@@ -34,7 +34,7 @@ public class BetterLogger {
 	public var handlers: [LoggerHandler]
 	public var listeners: [BetterLogger.Severity: () -> Void]
 	public var minimumSeverity: Severity = .debug
-	
+
 	public init(
 		name: String,
 		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
@@ -60,7 +60,7 @@ public class BetterLogger {
 	
 	% end
 	//
-	
+
 	private func log(
 		_ messageOrValue: @autoclosure () -> Any,
 		context: @autoclosure () -> [String: Any] = [:],
@@ -120,23 +120,4 @@ extension BetterLogger.Severity: Comparable {
 	public static func <(lhs: Self, rhs: Self) -> Bool {
 		return lhs.rawValue < rhs.rawValue
 	}
-}
-
-// Internal convenience functions
-
-internal extension String {
-	var lastPathComponent: String {
-		return URL(fileURLWithPath: self).lastPathComponent
-	}
-}
-
-internal func _stringRepresentationFrom(_ value: Any) -> String {
-	let objectMirror = Mirror(reflecting: value)
-	var objectDescription = ""
-	if value is CustomStringConvertible || value is CustomDebugStringConvertible || objectMirror.displayStyle == .enum || objectMirror.displayStyle == .struct {
-		objectDescription = String(describing: value)
-	} else {
-		dump(value, to: &objectDescription)
-	}
-	return objectDescription
 }
