@@ -34,7 +34,7 @@ public class BetterLogger {
 	public var listeners: [BetterLogger.Severity: () -> Void]
 	public var minimumSeverity: Severity = .debug
 	
-	init(
+	public init(
 		name: String,
 		handlers: [LoggerHandler] = [ConsoleLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
 		listeners: [BetterLogger.Severity: () -> Void] = [:]
