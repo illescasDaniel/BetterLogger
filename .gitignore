@@ -4,4 +4,4 @@
 /*.xcodeproj
 xcuserdata/
 
-Sources/BetterLogger/gyb.py
+.vscode
