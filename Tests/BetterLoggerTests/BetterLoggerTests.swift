@@ -5,6 +5,7 @@ struct Person: Sendable {
 	let name: String
 }
 
+@MainActor
 final class BetterLoggerTests: XCTestCase {
 
 	var log: BetterLogger { BetterLogger.default }
@@ -103,10 +104,4 @@ final class BetterLoggerTests: XCTestCase {
 		waitForExpectations(timeout: 3)
 	}
 
-	static var allTests = [
-		("testSeverities", testSeverities),
-		("testMinimumSeverity", testMinimumSeverity),
-		("testCustomLoggerSeverities", testCustomLoggerSeverities),
-		("testCustomLoggerListeners", testCustomLoggerListeners),
-	]
 }

@@ -1,6 +1,7 @@
 import XCTest
 import BetterLogger
 
+@MainActor
 final class BetterLoggerUnitTests: XCTestCase {
 
 	func testInitialization() {
