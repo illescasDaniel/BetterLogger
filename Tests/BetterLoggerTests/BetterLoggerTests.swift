@@ -1,7 +1,7 @@
 import XCTest
 import BetterLogger
 
-struct Person {
+struct Person: Sendable {
 	let name: String
 }
 
@@ -28,7 +28,7 @@ final class BetterLoggerTests: XCTestCase {
 		customLogger.debug("THIS SHOULDN'T PRINT")
 		customLogger.verbose("THIS SHOULDN'T PRINT")
 		customLogger.info("THIS SHOULDN'T PRINT")
-		customLogger.warning("THIS SHOULD PRINT", context: ["person": Person(name: "Daniel")])
+		customLogger.warning("THIS PRINT", context: ["person": Person(name: "Daniel")])
 		customLogger.error("THIS SHOULD PRINT")
 		customLogger.fatalError("THIS SHOULD PRINT")
 	}
@@ -41,7 +41,7 @@ final class BetterLoggerTests: XCTestCase {
 		)
 		customLogger.debug("Debug stuff")
 		customLogger.verbose("Verbose stuff")
-		customLogger.info("Some info here", context: ["some key": [1,2,3]])
+		customLogger.info("Some info here", context: ["some key": [1,2,3] as [Int]])
 		customLogger.warning("This is a warning", context: ["person": Person(name: "Daniel")])
 		customLogger.error("Death note")
 		customLogger.fatalError("Death note")
@@ -55,7 +55,7 @@ final class BetterLoggerTests: XCTestCase {
 		)
 		customLogger.debug("Debug stuff")
 		customLogger.verbose("Verbose stuff")
-		customLogger.info("Some info here", context: ["some key": [1,2,3]])
+		customLogger.info("Some info here", context: ["some key": [1,2,3] as [Int]])
 		customLogger.warning("This is a warning", context: ["person": Person(name: "Daniel")])
 		customLogger.error("Death note")
 		customLogger.fatalError("Death note")
@@ -69,7 +69,7 @@ final class BetterLoggerTests: XCTestCase {
 		)
 		customLogger.debug("Debug stuff")
 		customLogger.verbose("Verbose stuff")
-		customLogger.info("Some info here", context: ["some key": [1,2,3]])
+		customLogger.info("Some info here", context: ["some key": [1,2,3] as [Int]])
 		customLogger.warning("This is a warning", context: ["person": Person(name: "Daniel")])
 		customLogger.error("Death note")
 		customLogger.fatalError("Death note")

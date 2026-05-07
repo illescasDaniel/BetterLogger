@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol LoggerOutputFormatter {
+public protocol LoggerOutputFormatter: Sendable {
 	func stringRepresentationFrom(_ parameters: BetterLogger.Parameters) -> String
 }

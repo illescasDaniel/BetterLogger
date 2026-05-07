@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct XcodeLoggerOutputFormatter: LoggerOutputFormatter {
+public struct XcodeLoggerOutputFormatter: LoggerOutputFormatter, Sendable {
 	
 	public init() {}
 	

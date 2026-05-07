@@ -1,22 +1,33 @@
 import Foundation
 import BetterLogger
 
-class MockLoggerHandler: LoggerHandler {
+final class MockLoggerHandler: LoggerHandler, @unchecked Sendable {
 
-	struct MockFormatter: LoggerOutputFormatter {
+	struct MockFormatter: LoggerOutputFormatter, Sendable {
 		func stringRepresentationFrom(_ parameters: BetterLogger.Parameters) -> String {
 			return ""
 		}
 	}
 
-	var capturedParameters: [BetterLogger.Parameters] = []
+	private let lock = NSLock()
+	private var _capturedParameters: [BetterLogger.Parameters] = []
+	var capturedParameters: [BetterLogger.Parameters] {
+		lock.lock()
+		defer { lock.unlock() }
+		return _capturedParameters
+	}
+	
 	var formatter: LoggerOutputFormatter = MockFormatter()
 
 	func log(_ parameters: BetterLogger.Parameters) {
-		capturedParameters.append(parameters)
+		lock.lock()
+		defer { lock.unlock() }
+		_capturedParameters.append(parameters)
 	}
 
 	func reset() {
-		capturedParameters.removeAll()
+		lock.lock()
+		defer { lock.unlock() }
+		_capturedParameters.removeAll()
 	}
 }

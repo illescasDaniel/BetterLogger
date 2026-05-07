@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct SimpleLoggerOutputFormatter: LoggerOutputFormatter {
+public struct SimpleLoggerOutputFormatter: LoggerOutputFormatter, Sendable {
 	
 	public init() {}
 	

@@ -25,28 +25,37 @@ SOFTWARE.
 
 import Foundation
 
-public class BetterLogger {
+public struct BetterLogger: Sendable {
 
 	public static let `default` = BetterLogger(name: "Default")
 
-	public let name: String
-	public var handlers: [LoggerHandler]
-	public var listeners: [BetterLogger.Severity: () -> Void]
-	public var minimumSeverity: Severity = .debug
+	private let storage: Storage
+
+	public var name: String { storage.name }
+	public var handlers: [LoggerHandler] {
+		get { storage.handlers }
+		nonmutating set { storage.handlers = newValue }
+	}
+	public var listeners: [BetterLogger.Severity: @Sendable () -> Void] {
+		get { storage.listeners }
+		nonmutating set { storage.listeners = newValue }
+	}
+	public var minimumSeverity: Severity {
+		get { storage.minimumSeverity }
+		nonmutating set { storage.minimumSeverity = newValue }
+	}
 
 	public init(
 		name: String,
 		handlers: [LoggerHandler] = [PrintLoggerHandler(formatter: XcodeLoggerOutputFormatter())],
-		listeners: [BetterLogger.Severity: () -> Void] = [:]
+		listeners: [BetterLogger.Severity: @Sendable () -> Void] = [:]
 	) {
-		self.name = name
-		self.handlers = handlers
-		self.listeners = listeners
+		self.storage = Storage(name: name, handlers: handlers, listeners: listeners)
 	}
 
 	public func debug(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
@@ -57,8 +66,8 @@ public class BetterLogger {
 	}
 
 	public func verbose(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
@@ -69,8 +78,8 @@ public class BetterLogger {
 	}
 
 	public func info(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
@@ -81,8 +90,8 @@ public class BetterLogger {
 	}
 
 	public func warning(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
@@ -93,8 +102,8 @@ public class BetterLogger {
 	}
 
 	public func error(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
@@ -105,8 +114,8 @@ public class BetterLogger {
 	}
 
 	public func fatalError(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
@@ -119,39 +128,103 @@ public class BetterLogger {
 	//
 
 	private func log(
-		_ messageOrValue: @autoclosure () -> Any,
-		context: @autoclosure () -> [String: Any] = [:],
+		_ messageOrValue: @autoclosure () -> any Sendable,
+		context: @autoclosure () -> [String: any Sendable] = [:],
 		contextPrivacy: ContextPrivacy = .public,
 		severity: Severity,
 
 		_file: String = #file, _function: String = #function, _line: Int = #line, _column: Int = #column
 	) {
-		guard severity >= minimumSeverity else {
-			return
+		self.storage.log(
+			messageOrValue: messageOrValue(),
+			context: context(),
+			contextPrivacy: contextPrivacy,
+			severity: severity,
+			_file: _file,
+			_function: _function,
+			_line: _line,
+			_column: _column
+		)
+	}
+
+	private final class Storage: @unchecked Sendable {
+		let name: String
+		private let lock = NSRecursiveLock()
+		private var _handlers: [LoggerHandler]
+		private var _listeners: [BetterLogger.Severity: @Sendable () -> Void]
+		private var _minimumSeverity: BetterLogger.Severity = .debug
+
+		init(name: String, handlers: [LoggerHandler], listeners: [BetterLogger.Severity: @Sendable () -> Void]) {
+			self.name = name
+			self._handlers = handlers
+			self._listeners = listeners
 		}
-		self.listeners[severity]?()
-		for handler in self.handlers {
-			handler.log(Parameters(
+
+		var handlers: [LoggerHandler] {
+			get { lock.withLock { _handlers } }
+			set { lock.withLock { _handlers = newValue } }
+		}
+
+		var listeners: [BetterLogger.Severity: @Sendable () -> Void] {
+			get { lock.withLock { _listeners } }
+			set { lock.withLock { _listeners = newValue } }
+		}
+
+		var minimumSeverity: BetterLogger.Severity {
+			get { lock.withLock { _minimumSeverity } }
+			set { lock.withLock { _minimumSeverity = newValue } }
+		}
+
+		func log(
+			messageOrValue: any Sendable,
+			context: [String: any Sendable],
+			contextPrivacy: BetterLogger.ContextPrivacy,
+			severity: BetterLogger.Severity,
+			_file: String, _function: String, _line: Int, _column: Int
+		) {
+			lock.lock()
+			let minSeverity = _minimumSeverity
+			let handlers = _handlers
+			let listener = _listeners[severity]
+			lock.unlock()
+
+			guard severity >= minSeverity else {
+				return
+			}
+			listener?()
+			let parameters = Parameters(
 				loggerName: self.name,
-				value: messageOrValue(),
+				value: messageOrValue,
 				severity: severity,
-				context: context(),
+				context: context,
 				contextPrivacy: contextPrivacy,
 				metadata: .init(file: _file, function: _function, line: _line, column: _column)
-			))
+			)
+			for handler in handlers {
+				handler.log(parameters)
+			}
 		}
 	}
 }
+
+private extension NSRecursiveLock {
+	func withLock<T>(_ body: () -> T) -> T {
+		self.lock()
+		defer { self.unlock() }
+		return body()
+	}
+}
+
 extension BetterLogger {
 
-	public struct Metadata {
+	public struct Metadata: Sendable {
 		public let file: String
 		public let function: String
 		public let line: Int
 		public let column: Int
 	}
 
-	public enum Severity: Int {
+	public enum Severity: Int, Sendable {
 		case debug
 		case verbose
 		case info
@@ -171,16 +244,16 @@ extension BetterLogger {
 		}
 	}
 
-	public enum ContextPrivacy {
+	public enum ContextPrivacy: Sendable {
 		case `public`
 		case `private`
 	}
 
-	public struct Parameters {
+	public struct Parameters: Sendable {
 		public let loggerName: String
-		public let value: Any
+		public let value: any Sendable
 		public let severity: BetterLogger.Severity
-		public let context: [String: Any]
+		public let context: [String: any Sendable]
 		public let contextPrivacy: ContextPrivacy
 		public let metadata: BetterLogger.Metadata
 	}

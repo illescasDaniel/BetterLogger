@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol LoggerHandler {
+public protocol LoggerHandler: Sendable {
 	func log(_ parameters: BetterLogger.Parameters)
 }
